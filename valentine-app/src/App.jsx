@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 
 export default function App() {
   // ✅ 50 memories: /public/memories/01.jpeg ... 50.jpeg
+  const NAILS_LINK = "https://www.flipkart.com/pink-truck-set-24-artificial-reusable-nails-caramel-design-glue-gold/p/itm9a19151ae9404?pid=ALNHCSQSJGTHKFWW&lid=LSTALNHCSQSJGTHKFWW0ISIBO&marketplace=FLIPKART&pageUID=1771069571139"; // paste product link
+
   const memories = useMemo(() => {
     const maps = ["My cutu Bubuuudii"];
     const moments = [
@@ -40,7 +42,7 @@ export default function App() {
   const audioRef = useRef(null);
   const [musicOn, setMusicOn] = useState(true);
   const [volume, setVolume] = useState(0.5);
-
+  const [showGift, setShowGift] = useState(false);
   // Kiss + accepted
   const [accepted, setAccepted] = useState(false);
   const [showKiss, setShowKiss] = useState(false);
@@ -228,6 +230,28 @@ export default function App() {
     const t = e.touches?.[0];
     moveNoAway(t ? t.clientX : e.clientX, t ? t.clientY : e.clientY);
   }
+  async function onTapReveal() {
+  setShowGift(true);
+
+  // start music (audible) on tap
+  try {
+    const a = audioRef.current;
+    if (a && musicOn) {
+      setMuted(false);
+      a.muted = false;
+      a.volume = volume;
+      await a.play();
+    }
+  } catch (e) {
+    console.log("Music blocked:", e);
+  }
+}
+
+function continueToMemories() {
+  setShowGift(false);
+  setScreen(1);
+}
+
 
   async function toggleMusic() {
     const a = audioRef.current;
@@ -310,7 +334,7 @@ export default function App() {
         </header>
 
         <main className="card" ref={stageRef} onMouseMove={onStageMouseMove}>
-          {screen === 0 && <TapSurprise onTap={startSurprise} />}
+          {screen === 0 && <TapSurprise onTap={onTapReveal} />}
 
           {screen === 1 && (
             <MemorySlide
@@ -343,6 +367,30 @@ export default function App() {
 
         
       </div>
+      {showGift && (
+  <div className="modalBackdrop" role="dialog" aria-modal="true">
+    <div className="modalCard popIn">
+      <div className="modalTop">
+        <div className="modalTitle">Surprise for you, bubuudii 🎁💖</div>
+        <button className="xBtn" onClick={() => setShowGift(false)}>✕</button>
+      </div>
+
+      <p className="modalText">
+        I picked this cute thing for you… click the image to open it 😘
+      </p>
+
+      <a className="giftLink" href={NAILS_LINK} target="_blank" rel="noreferrer">
+        <img className="giftImg" src={'/surprise/gift.jpeg'} alt="Surprise nails" />
+        <div className="giftHint">Tap image to open the surprise →</div>
+      </a>
+
+      <button className="btn shine" onClick={continueToMemories}>
+        Continue to Memories 💞
+      </button>
+    </div>
+  </div>
+)}
+
 
       {showKiss && <KissOverlay name="bubuudii" />}
 
@@ -700,6 +748,7 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   position:relative;
   
 }
+
 .shell{width:min(920px, 100%); position:relative; z-index:2;}
 .topbar{
   display:flex;
@@ -1228,4 +1277,57 @@ border-radius:5px;
   .proposalStage{height:230px}
   .vol{width:90px}
 }
+
+.modalBackdrop{
+  position:fixed;
+  inset:0;
+  background: rgba(0,0,0,.28);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index: 9998;
+  backdrop-filter: blur(6px);
+  padding:16px;
+}
+.modalCard{
+  width:min(520px, 100%);
+  background: rgba(255,255,255,.92);
+  border:1px solid rgba(255,255,255,.8);
+  border-radius: 26px;
+  box-shadow: 0 24px 70px rgba(0,0,0,.22);
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  text-align:center;
+}
+.modalTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.modalTitle{ font-weight:1000; color:#ff2d7d; text-align:left; }
+.xBtn{
+  border:none;
+  background: rgba(0,0,0,.06);
+  padding:10px 12px;
+  border-radius: 12px;
+  cursor:pointer;
+  font-weight:900;
+}
+.modalText{ margin:0; color: rgba(0,0,0,.65); font-weight:700; }
+.giftLink{ display:block; text-decoration:none; color:inherit; }
+.giftImg{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+  border-radius: 20px;
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow: 0 16px 40px rgba(0,0,0,.12);
+  transition: transform .18s ease;
+}
+.giftLink:hover .giftImg{ transform: scale(1.01); }
+.giftHint{ margin-top:8px; font-weight:900; color:#ff2d7d; }
+
 `;
