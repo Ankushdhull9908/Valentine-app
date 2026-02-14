@@ -341,12 +341,7 @@ export default function App() {
           {screen === 3 && <SuccessScreen onRestart={restart} />}
         </main>
 
-        <footer className="footer">
-          <span>
-            Photos: <b>public/memories/01.jpeg..50.jpeg</b> | Song:{" "}
-            <b>public/music/song.mp3</b>
-          </span>
-        </footer>
+        
       </div>
 
       {showKiss && <KissOverlay name="bubuudii" />}
@@ -485,12 +480,12 @@ function Proposal({ onYes, noBtnRef, noPos, noReady, onNoPointerDown }) {
     <div className="content proposal popIn">
       <div className="bigHeart">💘</div>
 
-      <h1 className="title">Bubu… will you be my Valentine? 💘</h1>
+      <h1 className="title">Bubudiii… will you be my Valentine? 💘</h1>
 
-      <p className="text type">Bubu, you are my favorite person 💖</p>
+      <p className="text type">Bubudiii, you are my favorite person 💖</p>
 
       <p className="text">
-        Tum meri best teammate bhi ho… aur meri sabse cute si duniya bhi. 🥺💞
+        bubuuuu apkoooo bhottt bhott jaada pyaar krta hu......i lovee you sooo muchhhhhh 🥺💞
       </p>
 
       <p className="text">
@@ -519,7 +514,7 @@ function Proposal({ onYes, noBtnRef, noPos, noReady, onNoPointerDown }) {
         </button>
       </div>
 
-      <div className="smallNote">Try pressing “No” 😄 (It will run away)</div>
+      <div className="smallNote">Try pressing “No” 😄</div>
     </div>
   );
 }
@@ -647,7 +642,9 @@ function CoupleCartoon() {
             <div className="eye e2" />
             <div className="smile" />
           </div>
-          <div className="body" />
+          <div className="body" id="coupleimg">
+              <img src={`/memories/coupleimg1.jpeg`}/>
+          </div>
         </div>
 
         <div className="between">
@@ -663,7 +660,10 @@ function CoupleCartoon() {
             <div className="eye e2" />
             <div className="smile" />
           </div>
-          <div className="body" />
+          <div className="body" id="coupleimg">
+            <img src={`/memories/coupleimg2.jpeg`}/>
+
+          </div>
         </div>
       </div>
     </div>
@@ -916,6 +916,9 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   pointer-events:none;
   z-index:1;
 }
+
+#coupleimg{
+object-fit:cover}
 .heart{
   position:absolute;
   bottom:-40px;
@@ -998,6 +1001,12 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   color:#ff2d7d;
   border-color: rgba(255,45,125,.22);
   background: rgba(255,45,125,.10);
+}
+
+#coupleimg img{
+height:120px;
+width:120px;
+border-radius:5px;
 }
 
 /* entrance transitions */
@@ -1197,7 +1206,7 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   background: rgba(255,45,125,.18);
   border:1px solid rgba(255,45,125,.18);
 }
-.between{width:120px;height:140px; position:relative; display:flex; align-items:center; justify-content:center;}
+.between{width:70px;height:140px; position:relative; display:flex; align-items:center; justify-content:center;}
 .pulseHeart{font-size:44px; animation: pulse 1.2s ease-in-out infinite;}
 @keyframes pulse{0%,100%{transform:scale(1)} 50%{transform:scale(1.18)}}
 .spark{
