@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 export default function App() {
-  // ✅ 50 PUBG memories: /public/memories/01.jpg ... 50.jpg
+  // ✅ 50 memories: /public/memories/01.jpeg ... 50.jpeg
   const memories = useMemo(() => {
-    const maps = ["Erangel", "Livik", "Miramar", "Sanhok", "Vikendi", "Nusa"];
+    const maps = ["My cutu Bubuuudii"];
     const moments = [
-      "Our first match together 🎧",
-      "First Chicken Dinner with you 🍗",
-      "Late night talks in the lobby 🌙",
-      "When you saved me (best teammate!) 🥺",
+      "First time humne INSTA IDs share kri😘",
+      "First time Numbers share kre ❤️❤️",
+      "New Wow modes try krte the😂💕💕",
+      "First Time tumne mera App try kiya💕💕",
       "That one clutch fight 😳🔥",
       "Landing together like always 🪂",
       "Dancing after win 💃🕺",
@@ -21,63 +21,123 @@ export default function App() {
     for (let i = 1; i <= 50; i++) {
       const num = String(i).padStart(2, "0");
       list.push({
-        title: `Match Highlight #${num} ⭐`,
+        title: `Our Memories #${num} ⭐`,
         text: moments[(i - 1) % moments.length],
         map: maps[(i - 1) % maps.length],
-        tag: i % 5 === 0 ? "CHICKEN DINNER 🍗" : "BEST DUO 💞",
-        img: `/memories/${num}.jpg`,
+        tag: "BEST DUO 💞",
+        img: `/memories/${num}.jpeg`,
       });
     }
     return list;
   }, []);
 
-  // Screens:
-  // 0 = Tap Surprise
-  // 1 = Memories
-  // 2 = Proposal
-  // 3 = Success
+  // Screens: 0 Tap -> 1 Memories -> 2 Proposal -> 3 Success
   const [screen, setScreen] = useState(0);
   const [index, setIndex] = useState(0);
 
-  const [accepted, setAccepted] = useState(false);
-  const [showKiss, setShowKiss] = useState(false);
-
-  // Music
+  // Music autoplay muted then unmute on tap
+  const [muted, setMuted] = useState(true);
   const audioRef = useRef(null);
   const [musicOn, setMusicOn] = useState(true);
   const [volume, setVolume] = useState(0.5);
 
-  // Runaway "No" button
+  // Kiss + accepted
+  const [accepted, setAccepted] = useState(false);
+  const [showKiss, setShowKiss] = useState(false);
+
+  // Autoplay slideshow
+  const [autoPlay, setAutoPlay] = useState(true);
+  const [paused, setPaused] = useState(false);
+  const intervalRef = useRef(null);
+
+  // Runaway "No"
   const stageRef = useRef(null);
   const noBtnRef = useRef(null);
   const [noPos, setNoPos] = useState({ x: 0, y: 0 });
   const [noReady, setNoReady] = useState(false);
 
+  // For slide transitions
+  const [animKey, setAnimKey] = useState(0);
+
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
 
+  // Try autoplay muted on first load (may or may not work, but safe)
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    a.muted = true;
+    a.volume = volume;
+    a.play().catch(() => {});
+  }, []);
+
   async function startSurprise() {
     setScreen(1);
 
-    // Start music AFTER user tap
+    // Unmute & play after user tap (reliable)
     try {
-      if (audioRef.current && musicOn) {
-        audioRef.current.currentTime = 0;
-        await audioRef.current.play();
+      const a = audioRef.current;
+      if (a && musicOn) {
+        setMuted(false);
+        a.muted = false;
+        a.volume = volume;
+        await a.play();
       }
     } catch (e) {
-      console.log("Music play blocked:", e);
+      console.log("Music blocked:", e);
     }
   }
 
   function next() {
+    setAnimKey((k) => k + 1);
     if (index < memories.length - 1) setIndex((i) => i + 1);
     else setScreen(2);
   }
+
   function prev() {
+    setAnimKey((k) => k + 1);
     if (index > 0) setIndex((i) => i - 1);
   }
+
+  // ✅ Auto slideshow: every 5s when on Memories screen
+  useEffect(() => {
+    if (screen !== 1) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      return;
+    }
+    if (!autoPlay || paused) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      return;
+    }
+
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setAnimKey((k) => k + 1);
+      setIndex((i) => {
+        if (i >= memories.length - 1) {
+          // go to proposal when finished
+          setScreen(2);
+          return i;
+        }
+        return i + 1;
+      });
+    }, 5000);
+
+    return () => {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    };
+  }, [screen, autoPlay, paused, memories.length]);
+
+  // Pause autoplay if user goes to proposal/success
+  useEffect(() => {
+    if (screen !== 1) {
+      setPaused(false);
+    }
+  }, [screen]);
 
   // Place NO button initially inside proposal stage
   useEffect(() => {
@@ -87,14 +147,11 @@ export default function App() {
     const noBtn = noBtnRef.current;
     if (!stage || !noBtn) return;
 
-    // Wait a tick so button has size
     requestAnimationFrame(() => {
       const s = stage.getBoundingClientRect();
       const b = noBtn.getBoundingClientRect();
-
       const initX = Math.max(0, s.width - b.width - 16);
       const initY = Math.max(0, s.height - b.height - 16);
-
       setNoPos({ x: initX, y: initY });
       setNoReady(true);
     });
@@ -141,7 +198,6 @@ export default function App() {
     nx = clamp(nx, 0, maxX);
     ny = clamp(ny, 0, maxY);
 
-    // If stuck on edge, random jump
     if (Math.abs(nx - noPos.x) < 5 && Math.abs(ny - noPos.y) < 5) {
       nx = Math.random() * maxX;
       ny = Math.random() * maxY;
@@ -174,25 +230,26 @@ export default function App() {
   }
 
   async function toggleMusic() {
+    const a = audioRef.current;
     setMusicOn((v) => !v);
+    if (!a) return;
 
-    if (!musicOn) {
-      // turning ON
-      try {
-        await audioRef.current?.play();
-      } catch (e) {
-        console.log("Music play blocked:", e);
-      }
+    if (musicOn) {
+      a.pause();
     } else {
-      // turning OFF
-      audioRef.current?.pause();
+      try {
+        setMuted(false);
+        a.muted = false;
+        a.volume = volume;
+        await a.play();
+      } catch (e) {
+        console.log("Music blocked:", e);
+      }
     }
   }
 
   function sayYes() {
     setAccepted(true);
-
-    // Kiss overlay first
     setShowKiss(true);
 
     setTimeout(() => {
@@ -206,24 +263,33 @@ export default function App() {
     setShowKiss(false);
     setIndex(0);
     setScreen(0);
+    setAnimKey((k) => k + 1);
+    setPaused(false);
 
-    // stop music on replay (optional)
     try {
       audioRef.current?.pause();
       if (audioRef.current) audioRef.current.currentTime = 0;
+      setMuted(true);
     } catch {}
   }
 
   return (
     <div className="page">
       <FloatingHearts />
+      <SparkleLayer />
 
-      {/* Background music file: public/music/song.mp3 */}
-      <audio ref={audioRef} src="/music/song.mp3" loop preload="auto" />
+      <audio
+        ref={audioRef}
+        src="/music/song.mp3"
+        loop
+        preload="auto"
+        autoPlay
+        muted={muted}
+      />
 
       <div className="shell">
         <header className="topbar">
-          <div className="brand">💖 For my bubuudii</div>
+          <div className="brand glowText">💖 For my bubuudii</div>
 
           <div className="music">
             <button className="btn ghost small" onClick={toggleMusic}>
@@ -248,12 +314,17 @@ export default function App() {
 
           {screen === 1 && (
             <MemorySlide
+              key={animKey} // force re-trigger entrance animation
               item={memories[index]}
               index={index}
               total={memories.length}
               onNext={next}
               onPrev={prev}
               onSkip={() => setScreen(2)}
+              autoPlay={autoPlay}
+              setAutoPlay={setAutoPlay}
+              paused={paused}
+              setPaused={setPaused}
             />
           )}
 
@@ -272,13 +343,12 @@ export default function App() {
 
         <footer className="footer">
           <span>
-            Put photos in <b>public/memories</b> (01.jpg..50.jpg) and song in{" "}
+            Photos: <b>public/memories/01.jpeg..50.jpeg</b> | Song:{" "}
             <b>public/music/song.mp3</b>
           </span>
         </footer>
       </div>
 
-      {/* ✅ Kiss overlay is rendered here */}
       {showKiss && <KissOverlay name="bubuudii" />}
 
       <style>{css}</style>
@@ -291,28 +361,44 @@ export default function App() {
 function TapSurprise({ onTap }) {
   return (
     <div className="content tap">
-      <div className="gift">🎁</div>
+      <div className="gift wobble">🎁</div>
       <h1 className="title">Tap to reveal a surprise for bubuudii 💖</h1>
       <p className="text">A small memory journey… made just for you.</p>
 
-      <button className="btn big" onClick={onTap}>
+      <button className="btn big shine" onClick={onTap}>
         Tap to Start Match 🎮✨
       </button>
 
-      <p className="smallNote">Music will start after tap.</p>
+      <div className="tinyRow">
+        <span className="tinyChip">✨ Cute slideshow starts automatically</span>
+        <span className="tinyChip hot">💞 Love vibes ON</span>
+      </div>
+
+      <p className="smallNote">Music will be audible after tap.</p>
     </div>
   );
 }
 
-function MemorySlide({ item, index, total, onNext, onPrev, onSkip }) {
+function MemorySlide({
+  item,
+  index,
+  total,
+  onNext,
+  onPrev,
+  onSkip,
+  autoPlay,
+  setAutoPlay,
+  paused,
+  setPaused,
+}) {
   const [imgOk, setImgOk] = useState(true);
 
   useEffect(() => {
-    setImgOk(true); // reset when slide changes
+    setImgOk(true);
   }, [item.img]);
 
   return (
-    <div className="content">
+    <div className="content slideIn">
       <div className="progress">
         <div className="dots">
           {Array.from({ length: Math.min(total, 8) }).map((_, i) => (
@@ -330,29 +416,53 @@ function MemorySlide({ item, index, total, onNext, onPrev, onSkip }) {
       </div>
 
       <div className="hero">
-        {imgOk ? (
-          <img
-            className="photo"
-            src={item.img}
-            alt={item.title}
-            onError={() => setImgOk(false)}
-          />
-        ) : (
-          <div className="photo placeholder">
-            <div className="phIcon">📷</div>
-            <div className="phText">Missing: {item.img}</div>
-          </div>
-        )}
+        <div className="photoFrame floaty">
+          {imgOk ? (
+            <img
+              className="photo"
+              src={item.img}
+              alt={item.title}
+              onError={() => setImgOk(false)}
+            />
+          ) : (
+            <div className="photo placeholder">
+              <div className="phIcon">📷</div>
+              <div className="phText">Missing: {item.img}</div>
+            </div>
+          )}
+          <div className="frameGlow" />
+        </div>
       </div>
 
-      {/* ✅ chips OUTSIDE hero */}
       <div className="pubgRow">
-        <span className="chip">🗺 {item.map}</span>
+        <span className="chip">💌 {item.map}</span>
         <span className="chip hot">{item.tag}</span>
       </div>
 
       <h2 className="title">{item.title}</h2>
       <p className="text">{item.text}</p>
+
+      <div className="miniControls">
+        <button
+          className={`pill ${autoPlay ? "on" : ""}`}
+          onClick={() => setAutoPlay((v) => !v)}
+        >
+          {autoPlay ? "▶ Auto ON" : "⏸ Auto OFF"}
+        </button>
+
+        <button
+          className={`pill ${paused ? "on" : ""}`}
+          onClick={() => setPaused((v) => !v)}
+          disabled={!autoPlay}
+          title={!autoPlay ? "Turn Auto ON first" : ""}
+        >
+          {paused ? "▶ Resume" : "⏸ Pause"}
+        </button>
+
+        <button className="pill" onClick={onSkip}>
+          Skip →
+        </button>
+      </div>
 
       <div className="actions">
         <button className="btn ghost" onClick={onPrev} disabled={index === 0}>
@@ -364,7 +474,7 @@ function MemorySlide({ item, index, total, onNext, onPrev, onSkip }) {
       </div>
 
       <button className="linkBtn" onClick={onSkip}>
-        Skip to Proposal →
+        Go to Proposal →
       </button>
     </div>
   );
@@ -372,7 +482,7 @@ function MemorySlide({ item, index, total, onNext, onPrev, onSkip }) {
 
 function Proposal({ onYes, noBtnRef, noPos, noReady, onNoPointerDown }) {
   return (
-    <div className="content proposal">
+    <div className="content proposal popIn">
       <div className="bigHeart">💘</div>
 
       <h1 className="title">Bubu… will you be my Valentine? 💘</h1>
@@ -380,7 +490,7 @@ function Proposal({ onYes, noBtnRef, noPos, noReady, onNoPointerDown }) {
       <p className="text type">Bubu, you are my favorite person 💖</p>
 
       <p className="text">
-        You’re not just my duo partner… you’re my comfort, my smile, my home.
+        Tum meri best teammate bhi ho… aur meri sabse cute si duniya bhi. 🥺💞
       </p>
 
       <p className="text">
@@ -388,7 +498,7 @@ function Proposal({ onYes, noBtnRef, noPos, noReady, onNoPointerDown }) {
       </p>
 
       <div className="proposalStage">
-        <button className="btn yes" onClick={onYes}>
+        <button className="btn yes shine" onClick={onYes}>
           Yes 😍
         </button>
 
@@ -409,7 +519,7 @@ function Proposal({ onYes, noBtnRef, noPos, noReady, onNoPointerDown }) {
         </button>
       </div>
 
-      <div className="smallNote">Try pressing “No” 😄</div>
+      <div className="smallNote">Try pressing “No” 😄 (It will run away)</div>
     </div>
   );
 }
@@ -451,9 +561,11 @@ function KissOverlay({ name = "bubuudii" }) {
 
 function SuccessScreen({ onRestart }) {
   return (
-    <div className="content success">
+    <div className="content success popIn">
       <h1 className="title">Yayyyy bubuudii! 🥰</h1>
       <p className="text">Happy Couple Forever 💖</p>
+
+      <div className="finalBadge bounce">🍗 Winner Winner: Happy Couple Dinner 💞</div>
 
       <div className="cartoonWrap">
         <CoupleCartoon />
@@ -467,7 +579,7 @@ function SuccessScreen({ onRestart }) {
 }
 
 function FloatingHearts() {
-  const hearts = Array.from({ length: 14 }).map((_, i) => ({
+  const hearts = Array.from({ length: 16 }).map((_, i) => ({
     id: i,
     left: Math.random() * 100,
     delay: Math.random() * 6,
@@ -490,6 +602,34 @@ function FloatingHearts() {
         >
           ❤
         </span>
+      ))}
+    </div>
+  );
+}
+
+// extra sparkle layer
+function SparkleLayer() {
+  const dots = Array.from({ length: 18 }).map((_, i) => ({
+    id: i,
+    top: Math.random() * 100,
+    left: Math.random() * 100,
+    delay: Math.random() * 4,
+    dur: 3 + Math.random() * 3,
+  }));
+
+  return (
+    <div className="sparkles" aria-hidden="true">
+      {dots.map((d) => (
+        <span
+          key={d.id}
+          className="sparkDot"
+          style={{
+            top: `${d.top}%`,
+            left: `${d.left}%`,
+            animationDelay: `${d.delay}s`,
+            animationDuration: `${d.dur}s`,
+          }}
+        />
       ))}
     </div>
   );
@@ -557,7 +697,7 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   overflow:hidden;
   position:relative;
 }
-.shell{width:min(900px, 100%); position:relative; z-index:2;}
+.shell{width:min(920px, 100%); position:relative; z-index:2;}
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -567,6 +707,11 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   flex-wrap:wrap;
 }
 .brand{font-weight:1000; letter-spacing:.3px;}
+.glowText{animation: glow 2.2s ease-in-out infinite;}
+@keyframes glow{
+  0%,100%{filter: drop-shadow(0 0 0 rgba(255,45,125,0))}
+  50%{filter: drop-shadow(0 10px 18px rgba(255,45,125,.25))}
+}
 .music{display:flex; align-items:center; gap:10px;}
 .vol{width:120px}
 
@@ -593,10 +738,18 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   align-items:center;
   text-align:center;
   gap:14px;
-  min-height:560px;
+  min-height:580px;
   justify-content:center;
+  position:relative;
 }
-.tap .gift{font-size:56px; animation: pop 1.4s ease-in-out infinite;}
+.tap .gift{font-size:56px;}
+.wobble{animation: wobble 1.6s ease-in-out infinite;}
+@keyframes wobble{
+  0%,100%{transform:rotate(0deg) scale(1)}
+  25%{transform:rotate(-6deg) scale(1.02)}
+  50%{transform:rotate(6deg) scale(1.05)}
+  75%{transform:rotate(-3deg) scale(1.02)}
+}
 
 .progress{
   width:100%;
@@ -611,14 +764,39 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
 .count{color:var(--muted); font-size:14px;}
 
 .hero{width:100%; display:flex; justify-content:center;}
-.photo{
-  width:min(640px, 100%);
-  height:320px;
-  object-fit:cover;
-  border-radius:22px;
-  box-shadow: 0 14px 35px rgba(0,0,0,.12);
+.photoFrame{
+  width:min(680px, 100%);
+  border-radius:24px;
+  position:relative;
+  overflow:hidden;
+  box-shadow: 0 16px 40px rgba(0,0,0,.12);
   border:1px solid rgba(255,255,255,.7);
   background: rgba(255,255,255,.6);
+}
+.floaty{animation: floaty 3.6s ease-in-out infinite;}
+@keyframes floaty{
+  0%,100%{transform: translateY(0)}
+  50%{transform: translateY(-6px)}
+}
+.photo{
+  width:100%;
+  height:340px;
+  object-fit:contain;
+  display:block;
+  background: rgba(255,255,255,.6);
+}
+.frameGlow{
+  position:absolute; inset:-40px;
+  background: radial-gradient(circle at 30% 20%, rgba(255,45,125,.25), transparent 55%),
+              radial-gradient(circle at 80% 60%, rgba(255,122,89,.22), transparent 55%);
+  filter: blur(14px);
+  opacity:.8;
+  pointer-events:none;
+  animation: glowMove 4.5s ease-in-out infinite;
+}
+@keyframes glowMove{
+  0%,100%{transform: translate(0,0) scale(1)}
+  50%{transform: translate(12px,-10px) scale(1.02)}
 }
 .placeholder{
   display:flex;
@@ -631,14 +809,14 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
 
 .title{
   margin:0;
-  font-size: clamp(26px, 3.2vw, 42px);
+  font-size: clamp(26px, 3.2vw, 44px);
   line-height:1.1;
 }
 .text{
   margin:0;
   color:var(--muted);
   font-size: clamp(14px, 1.6vw, 18px);
-  max-width: 56ch;
+  max-width: 60ch;
 }
 
 .actions{
@@ -659,6 +837,8 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   box-shadow: 0 12px 25px rgba(255,45,125,.25);
   transition: transform .15s ease, opacity .15s ease;
   user-select:none;
+  position:relative;
+  overflow:hidden;
 }
 .btn:hover{transform: translateY(-1px) scale(1.01)}
 .btn:active{transform: translateY(0px) scale(.99)}
@@ -682,22 +862,40 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   touch-action: none;
 }
 
+/* shiny button animation */
+.shine::after{
+  content:"";
+  position:absolute;
+  top:-40%;
+  left:-60%;
+  width:60%;
+  height:180%;
+  transform: rotate(22deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+  animation: shineMove 2.4s ease-in-out infinite;
+}
+@keyframes shineMove{
+  0%{left:-70%}
+  50%{left:120%}
+  100%{left:120%}
+}
+
 .linkBtn{
   margin-top:6px;
   background: transparent;
   border: none;
   color: #ff2d7d;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
   text-decoration: underline;
 }
 
-.proposal .bigHeart{font-size:52px; animation: pop 1.6s ease-in-out infinite;}
+.proposal .bigHeart{font-size:54px; animation: pop 1.6s ease-in-out infinite;}
 @keyframes pop{0%,100%{transform:scale(1)} 50%{transform:scale(1.12)}}
 
 .proposalStage{
-  width: min(620px, 100%);
-  height: 190px;
+  width: min(640px, 100%);
+  height: 200px;
   position: relative;
   border-radius: 22px;
   background: linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,255,255,.55));
@@ -730,6 +928,25 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   100%{transform: translateY(-120vh) translateX(30px) rotate(25deg); opacity:0}
 }
 
+/* Sparkles */
+.sparkles{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+}
+.sparkDot{
+  position:absolute;
+  width:8px;height:8px;border-radius:999px;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 10px 22px rgba(255,45,125,.16);
+  animation: sparkleDot ease-in-out infinite;
+}
+@keyframes sparkleDot{
+  0%,100%{transform: scale(.6); opacity:.25}
+  50%{transform: scale(1.2); opacity:.8}
+}
+
 /* PUBG chips */
 .pubgRow{
   display:flex;
@@ -751,6 +968,48 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   color:#ff2d7d;
   border-color: rgba(255,45,125,.22);
   background: rgba(255,45,125,.10);
+}
+.tinyRow{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+.tinyChip{
+  padding:7px 10px; border-radius:999px;
+  font-weight:900; font-size:12px;
+  background: rgba(255,255,255,.85);
+  border:1px solid rgba(0,0,0,.06);
+}
+.tinyChip.hot{color:#ff2d7d; border-color: rgba(255,45,125,.2); background: rgba(255,45,125,.08);}
+
+/* mini controls */
+.miniControls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:2px;
+}
+.pill{
+  border:1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.88);
+  padding:10px 12px;
+  border-radius:999px;
+  font-weight:900;
+  cursor:pointer;
+}
+.pill.on{
+  color:#ff2d7d;
+  border-color: rgba(255,45,125,.22);
+  background: rgba(255,45,125,.10);
+}
+
+/* entrance transitions */
+.slideIn{animation: slideIn .55s ease both;}
+@keyframes slideIn{
+  from{opacity:0; transform: translateY(10px) scale(.98)}
+  to{opacity:1; transform: translateY(0) scale(1)}
+}
+.popIn{animation: popIn .55s ease both;}
+@keyframes popIn{
+  from{opacity:0; transform: scale(.96)}
+  to{opacity:1; transform: scale(1)}
 }
 
 /* type highlight line */
@@ -871,6 +1130,20 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
 
 /* success cartoon */
 .cartoonWrap{width:min(700px, 100%); margin-top:8px;}
+.finalBadge{
+  padding:10px 14px;
+  border-radius:999px;
+  font-weight:1000;
+  color:#ff2d7d;
+  background: rgba(255,45,125,.10);
+  border:1px solid rgba(255,45,125,.16);
+}
+.bounce{animation: bounce 1.6s ease-in-out infinite;}
+@keyframes bounce{
+  0%,100%{transform: translateY(0)}
+  50%{transform: translateY(-6px)}
+}
+
 .couple{
   width:100%;
   border-radius: 24px;
@@ -939,8 +1212,8 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
 @keyframes sparkle{0%,100%{transform:scale(.7); opacity:.35} 50%{transform:scale(1.2); opacity:.9}}
 
 @media (max-width: 520px){
-  .content{min-height:600px}
-  .proposalStage{height:220px}
+  .content{min-height:620px}
+  .proposalStage{height:230px}
   .vol{width:90px}
 }
 `;
