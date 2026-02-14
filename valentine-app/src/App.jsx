@@ -686,7 +686,7 @@ const css = `
 body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;}
 .page{
   min-height:100vh;
-  max-width:95vw;
+  max-width:99vw;
   width:100vw;
   background: radial-gradient(1200px 700px at 20% 10%, var(--bg2), transparent),
               radial-gradient(1200px 700px at 80% 20%, var(--bg1), transparent),
@@ -724,9 +724,9 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   border:1px solid rgba(255,255,255,.8);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding:24px;
+  padding:10px;
   position:relative;
-  overflow:hidden;
+
 }
 .footer{
   padding:10px 6px 0;
