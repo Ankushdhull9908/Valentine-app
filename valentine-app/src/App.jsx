@@ -686,6 +686,8 @@ const css = `
 body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;}
 .page{
   min-height:100vh;
+  max-width:95vw;
+  width:100vw;
   background: radial-gradient(1200px 700px at 20% 10%, var(--bg2), transparent),
               radial-gradient(1200px 700px at 80% 20%, var(--bg1), transparent),
               linear-gradient(135deg, #fff, #ffe7f1);
@@ -696,6 +698,7 @@ body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Ro
   padding:20px;
   overflow:hidden;
   position:relative;
+  
 }
 .shell{width:min(920px, 100%); position:relative; z-index:2;}
 .topbar{
@@ -1220,7 +1223,7 @@ border-radius:5px;
 .s3{left:48px; bottom:22px; animation-delay:.6s}
 @keyframes sparkle{0%,100%{transform:scale(.7); opacity:.35} 50%{transform:scale(1.2); opacity:.9}}
 
-@media (max-width: 520px){
+@media (max-width: 600px){
   .content{min-height:620px}
   .proposalStage{height:230px}
   .vol{width:90px}
