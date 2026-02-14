@@ -6,6 +6,8 @@ export default function App() {
 
   const memories = useMemo(() => {
     const maps = ["My cutu Bubuuudii"];
+    
+
     const moments = [
       "First time humne INSTA IDs share kri😘",
       "First time Numbers share kre ❤️❤️",
@@ -64,6 +66,13 @@ export default function App() {
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
+  const bubuGifs = [
+  "/gif/img1.gif",
+  "/gif/img2.gif",
+  "/gif/img3.gif",
+  "/gif/img4.gif",
+  "/gif/img5.gif",
+];
 
   // Try autoplay muted on first load (may or may not work, but safe)
   useEffect(() => {
@@ -313,11 +322,12 @@ function continueToMemories() {
 
       <div className="shell">
         <header className="topbar">
-          <div className="brand glowText">💖 For my bubuudii</div>
+          <div className="titleandmusic">
+            <div className="brand glowText">💖 For my bubuudii</div>
 
           <div className="music">
             <button className="btn ghost small" onClick={toggleMusic}>
-              {musicOn ? "🔊 Music On" : "🔇 Music Off"}
+              {musicOn ? "🔊 On" : "🔇 Off"}
             </button>
 
             <input
@@ -331,6 +341,13 @@ function continueToMemories() {
               aria-label="volume"
             />
           </div>
+          </div>
+          
+           <div className="gifStrip" aria-hidden="true">
+    {bubuGifs.map((src, i) => (
+      <img key={i} src={src} className={`bubuGif d${i}`} alt="" />
+    ))}
+  </div>
         </header>
 
         <main className="card" ref={stageRef} onMouseMove={onStageMouseMove}>
@@ -1329,5 +1346,56 @@ border-radius:5px;
 }
 .giftLink:hover .giftImg{ transform: scale(1.01); }
 .giftHint{ margin-top:8px; font-weight:900; color:#ff2d7d; }
+
+.rightSide{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.gifStrip{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  width:100%;
+  justify-content:space-around;
+  height:auto;
+}
+
+.bubuGif{
+  width:44px;
+  height:44px;
+  border-radius:10px;
+  object-fit:cover;
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+  animation: gifBounce 1.8s ease-in-out infinite;
+}
+
+/* different delays so they feel alive */
+.d0{animation-delay:0s}
+.d1{animation-delay:.15s}
+.d2{animation-delay:.3s}
+.d3{animation-delay:.45s}
+.d4{animation-delay:.6s}
+
+@keyframes gifBounce{
+  0%,100%{transform: translateY(0) rotate(0deg); opacity:.95}
+  50%{transform: translateY(-6px) rotate(-2deg); opacity:1}
+}
+
+/* mobile: smaller gifs */
+@media (max-width:520px){
+  .bubuGif{width:28px;height:28px;border-radius:9px}
+  .rightSide{gap:8px}
+}
+
+.titleandmusic{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:5px;
+width:100%;
+}
 
 `;
