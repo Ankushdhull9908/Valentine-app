@@ -13,16 +13,54 @@ export default function App() {
       "First time Numbers share kre ❤️❤️",
       "New Wow modes try krte the😂💕💕",
       "First Time tumne mera App try kiya💕💕",
-      "That one clutch fight 😳🔥",
-      "Landing together like always 🪂",
-      "Dancing after win 💃🕺",
-      "Matching outfits moment 😄",
-      "When we laughed nonstop 😂",
-      "Most peaceful ride together 🚗💨",
+      "Kesa ajeeb character hogya tha 😂😂",
+      "Mera Duplicate magnet 1v1 m😂😂",
+      "Misciles se 1v1 krte the🤣🤣😘😘",
+      "tumhara ghar or mera ghar 😄",
+      "Ludo Game bhi try kiya",
+      "Kitna bccho wala ghar bnaya 😂",
+      "Bhot acha lgaa jb tum partner bne😍😘😘😘😘",
+      "Hiiie my cutieee😍😘😘😘😘",
+      "Latrine wala wow Mode😂😂😂",
+      "UNO bccha party😂😂😂",
+      "kisk sath ho..😂",
+      "kisk saath ho bar bar puchna😂😂",
+      "Bubuuudi ye din ko kbhi ni bhulungaa😘😘",
+      "12 bjte hi chicken dinner or bubuu n bhot pyaar se wish kiya😘😘",
+      "Bubuuddiii bhott achi photoo h😘😘",
+      "Hide & seek livik m😂😘😘",
+      "Outfit check bubu ki😂😘😘",
+      "Kitti cutee ho bubuu😂😘😘",
+      "Deadly DUO...ab to puri lobby khali h..mera plane h kyuki🤣🤣",
+      "Sky apne new OUTFIT dekhta h🤣🤣",
+      "Kitta acha bnaya tha m..haina😎😎",
+      "Ye kya hogya tha tumhee..madam😂😂",
+      "Mane Male character bnaliya..or bubu n outfit decide kre😂😂",
+      "Bubu nhii dikhra tumhara moohh..anamika dress m😂😂",
+      "Bubuuu bdiya bdiya sex postion imagine krna😂😂",
+      "Bubuuu tumhari fav cheej😘😘😂",
+      "MVP bngyi meri baabyyy😘😘😂",
+      "Yaad aya bubuuuu?😘😘😂",
+      "Kitta acha event tha pownin wala😘😘",
+      "Bubuuuuu tumhari is SNAP ko bhot dekha mane😘😘",
+      "MY LIFE..MY LOVE...MY WORLD..MY EVERYTHING...MY CUTIE BUBUU😘😘",
+      "Meri Bubuu kitti sundr lgri thi scarf m😘😘",
+      "Bubuuu Future m sathh m bhot saari photos click krenge sath m😘😘",
+      "Mmmmwaaaahhh baabbyyy....bhot bhott jaada sundr lgti ho scarf m😘😘😘😘",
+      "Kitte ache lgte h partner m😘😘😘😘",
+      "Bubuu ki favourite dress😘😘😘😘",
+      "Bubuu ko JIGGLE sikhara tha😘😘😘😘",
+      "heheheh😘",
+      "Bubuuuuu ko bs dekhta rehta hu..kitti cute h😘",
+      "ummmmmmmm😘",
+      "MACD or PVR😂😂",
+      "My Bubuuu ANGEL😂😂",
+      "Bubuuuuu or Gillie Suit...CUTiEEE😂😂😘😘",
+       "Bubuuuuu n kitti saari macchli maari😂😂😘😘",
     ];
 
     const list = [];
-    for (let i = 1; i <= 50; i++) {
+    for (let i = 1; i <= 48; i++) {
       const num = String(i).padStart(2, "0");
       list.push({
         title: `Our Memories #${num} ⭐`,
@@ -551,6 +589,7 @@ function Proposal({ onYes, noBtnRef, noPos, noReady, onNoPointerDown }) {
 
       <p className="text">
         bubuuuu apkoooo bhottt bhott jaada pyaar krta hu......i lovee you sooo muchhhhhh 🥺💞
+        Nhi reh skta m tumhare bina...Bhott jada attachment h tumse...m hmesha tumhare sath hu or hmesha rhunga.Sorry bubu mane late wish kiya...m bilkul bhi acha BF nhi hu...M change hora hu tumhare liye...Bs hmesha mere sath Rehna...mujhe or kuch ni chahiye..LOVE YOUUU BABBY❤️😘😘
       </p>
 
       <p className="text">
@@ -1073,7 +1112,7 @@ object-fit:cover}
 }
 
 #coupleimg img{
-height:120px;
+height:100px;
 width:120px;
 border-radius:5px;
 }
