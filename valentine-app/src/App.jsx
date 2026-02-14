@@ -314,6 +314,10 @@ function MemorySlide({ item, index, total, onNext, onPrev, onSkip }) {
             if (ph) ph.style.display = "flex";
           }}
         />
+        <div className="pubgRow">
+  <span className="chip">🗺 {item.map}</span>
+  <span className="chip hot">{item.tag}</span>
+</div>
         <div className="photo placeholder" style={{ display: "none" }}>
           <div className="phIcon">📷</div>
           <div className="phText">Photo missing: {item.img}</div>
@@ -321,7 +325,7 @@ function MemorySlide({ item, index, total, onNext, onPrev, onSkip }) {
       </div>
 
       <h2 className="title">{item.title}</h2>
-      <p className="text">{item.text}</p>
+<p className="text">{item.text}</p>
 
       <div className="actions">
         <button className="btn ghost" onClick={onPrev} disabled={index === 0}>
@@ -344,14 +348,18 @@ function Proposal({ onYes, noBtnRef, noPos, noReady, onNoPointerDown }) {
     <div className="content proposal">
       <div className="bigHeart">💘</div>
       
-      <h1 className="title">bubuudii… will you be my Valentine? 💘</h1>
+     <h1 className="title">Bubu… will you be my Valentine? 💘</h1>
 
 <p className="text type">
-  bubuudii, you are my favorite person 💖
+  Bubu, you are my favorite person 💖
 </p>
 
 <p className="text">
-  No distance can stop my love for you. I choose you — today, tomorrow, always.
+  You’re not just my duo partner… you’re my comfort, my smile, my home.
+</p>
+
+<p className="text">
+  Winner Winner… <b>Happy Couple Dinner</b> 🍗💞
 </p>
 
       <div className="proposalStage">
@@ -959,5 +967,27 @@ const css = `
   70%{opacity:1; transform:translate(-50%,-50%) scale(1)}
   100%{opacity:0; transform:translate(calc(-50% + 90px), calc(-50% - 70px)) scale(1.1)}
 }
+  .pubgRow{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:-4px;
+}
+.chip{
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:13px;
+  background: rgba(255,255,255,.9);
+  border:1px solid rgba(0,0,0,.08);
+  color:#333;
+}
+.chip.hot{
+  color:#ff2d7d;
+  border-color: rgba(255,45,125,.22);
+  background: rgba(255,45,125,.10);
+}
+
 
 `;
